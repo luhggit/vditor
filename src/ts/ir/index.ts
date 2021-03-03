@@ -10,7 +10,7 @@ import {
     selectEvent,
 } from "../util/editorCommonEvent";
 import {paste} from "../util/fixBrowserBehavior";
-import {hasClosestByClassName} from "../util/hasClosest";
+import {hasClosestByClassName, hasTopClosestByClassName} from "../util/hasClosest";
 import {
     getEditorRange, setRangeByWbr,
     setSelectionFocus,
@@ -121,17 +121,17 @@ class IR {
                     range.startContainer, "vditor-ir__preview");
             }
             if (previewElement) {
-                if (previewElement.previousElementSibling.firstElementChild) {
-                    range.selectNodeContents(previewElement.previousElementSibling.firstElementChild);
-                } else {
-                    // 行内数学公式
-                    range.selectNodeContents(previewElement.previousElementSibling);
-                }
-                range.collapse(true);
-                setSelectionFocus(range);
-                scrollCenter(vditor);
+                // if (previewElement.previousElementSibling.firstElementChild) {
+                //     range.selectNodeContents(previewElement.previousElementSibling.firstElementChild);
+                // } else {
+                //     // 行内数学公式
+                //     range.selectNodeContents(previewElement.previousElementSibling);
+                // }
+                // range.collapse(true);
+                // setSelectionFocus(range);
+                // scrollCenter(vditor);
             }
-
+            // debugger;
             // 点击图片光标选中图片地址
             if (event.target.tagName === "IMG") {
                 const linkElement =
@@ -158,11 +158,45 @@ class IR {
             }
 
             if (range.toString() === "") {
-                expandMarker(range, vditor);
+                // expandMarker(range, vditor);
+
+                console.log("pre:", vditor.preClickElement)
+                const nodeElement = hasTopClosestByClassName(range.startContainer, "vditor-ir__node");
+                console.log("nodeElement:", nodeElement)
+                if (!nodeElement) {
+                    // node -> null, null -> null
+                    if (vditor.preClickElement) {
+                        vditor.preClickElement.classList.remove("vditor-ir__node--expand");
+                    }
+                    vditor.preClickElement = null;
+                } else {
+                    // node -> node, node -> another node
+                    if (vditor.preClickElement && vditor.preClickElement !== nodeElement) {
+                        vditor.preClickElement.classList.remove("vditor-ir__node--expand");
+                        vditor.preClickElement = nodeElement
+                    }
+                }
             } else {
                 // https://github.com/Vanessa219/vditor/pull/681 当点击选中区域时 eventTarget 与 range 不一致，需延迟等待 range 发生变化
                 setTimeout(() => {
-                    expandMarker(getEditorRange(vditor), vditor);
+                    // expandMarker(getEditorRange(vditor), vditor);
+
+                    console.log("pre:", vditor.preClickElement)
+                    const nodeElement = hasTopClosestByClassName(range.startContainer, "vditor-ir__node");
+                    console.log("nodeElement:", nodeElement)
+                    if (!nodeElement) {
+                        // node -> null, null -> null
+                        if (vditor.preClickElement) {
+                            vditor.preClickElement.classList.remove("vditor-ir__node--expand");
+                        }
+                        vditor.preClickElement = null;
+                    } else {
+                        // node -> node, node -> another node
+                        if (vditor.preClickElement && vditor.preClickElement !== nodeElement) {
+                            vditor.preClickElement.classList.remove("vditor-ir__node--expand");
+                            vditor.preClickElement = nodeElement
+                        }
+                    }
                 });
             }
             clickToc(event, vditor);

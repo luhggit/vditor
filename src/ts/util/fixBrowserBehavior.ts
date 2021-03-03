@@ -1383,7 +1383,8 @@ export const paste = async (vditor: IVditor, event: (ClipboardEvent | DragEvent)
     } else if (code) {
         callback.pasteCode(code);
     } else {
-        if (textHTML.trim() !== "") {
+        // 自己做了一下处理 2021.3.3 09:13 ，因为从memory list里复制过来的东西也带了格式，感觉有点不好
+        if (textHTML.trim() !== "" && !textHTML.startsWith("<a>") && !textHTML.startsWith("<span>")) {
             const tempElement = document.createElement("div");
             tempElement.innerHTML = textHTML;
             tempElement.querySelectorAll("[style]").forEach((e) => {

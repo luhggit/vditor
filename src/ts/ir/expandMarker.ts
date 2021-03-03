@@ -57,6 +57,13 @@ export const expandMarker = (range: Range, vditor: IVditor) => {
     }
 
     if (nodeElement) {
+        console.log("pre:", vditor.preClickElement);
+        if (!vditor.preClickElement) {
+            vditor.preClickElement = nodeElement;
+        } else if (vditor.preClickElement !== nodeElement) {
+            vditor.preClickElement = nodeElement;
+        }
+
         nodeElement.classList.add("vditor-ir__node--expand");
         nodeElement.classList.remove("vditor-ir__node--hidden");
         // https://github.com/Vanessa219/vditor/issues/615 safari中光标位置跳动
