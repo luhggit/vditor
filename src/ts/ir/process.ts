@@ -217,4 +217,15 @@ export const processToolbar = (vditor: IVditor, actionBtn: Element, prefix: stri
     if (useHighlight) {
         highlightToolbarIR(vditor);
     }
+
+    // 设置preElement，用于在点击其它地方的时候自动把mark标记自动收起来
+    vditor.ir.element.querySelectorAll(".vditor-ir__node--expand").forEach((item) => {
+        if (item) {
+            if (!vditor.preClickElement) {
+                vditor.preClickElement = item;
+            } else if (vditor.preClickElement !== item) {
+                vditor.preClickElement = item;
+            }
+        }
+    });
 };
