@@ -65,6 +65,22 @@ class IR {
         event.clipboardData.setData("text/html", "");
     }
 
+    private hideMarker(vditor: IVditor, range: Range) {
+        console.log("pre nodeElement:", vditor.preClickElement)
+        const nodeElement = hasTopClosestByClassName(range.startContainer, "vditor-ir__node");
+        console.log("now nodeElement:", nodeElement)
+
+        if (vditor.preClickElement && vditor.preClickElement !== nodeElement) {
+            vditor.preClickElement.classList.remove("vditor-ir__node--expand");
+        }
+
+        if (!nodeElement) {
+            vditor.preClickElement = null;
+        } else {
+            vditor.preClickElement = nodeElement
+        }
+    }
+
     private bindEvent(vditor: IVditor) {
         this.element.addEventListener("paste", (event: ClipboardEvent & { target: HTMLElement }) => {
             paste(vditor, event, {
@@ -158,45 +174,20 @@ class IR {
             }
 
             if (range.toString() === "") {
+                // 展开mark标签
                 // expandMarker(range, vditor);
 
-                console.log("pre:", vditor.preClickElement)
-                const nodeElement = hasTopClosestByClassName(range.startContainer, "vditor-ir__node");
-                console.log("nodeElement:", nodeElement)
-                if (!nodeElement) {
-                    // node -> null, null -> null
-                    if (vditor.preClickElement) {
-                        vditor.preClickElement.classList.remove("vditor-ir__node--expand");
-                    }
-                    vditor.preClickElement = null;
-                } else {
-                    // node -> node, node -> another node
-                    if (vditor.preClickElement && vditor.preClickElement !== nodeElement) {
-                        vditor.preClickElement.classList.remove("vditor-ir__node--expand");
-                        vditor.preClickElement = nodeElement
-                    }
-                }
+                // 隐藏mark标签
+                this.hideMarker(vditor, range);
             } else {
+                const me = this;
                 // https://github.com/Vanessa219/vditor/pull/681 当点击选中区域时 eventTarget 与 range 不一致，需延迟等待 range 发生变化
                 setTimeout(() => {
+                    // 展开mark标签
                     // expandMarker(getEditorRange(vditor), vditor);
 
-                    console.log("pre:", vditor.preClickElement)
-                    const nodeElement = hasTopClosestByClassName(range.startContainer, "vditor-ir__node");
-                    console.log("nodeElement:", nodeElement)
-                    if (!nodeElement) {
-                        // node -> null, null -> null
-                        if (vditor.preClickElement) {
-                            vditor.preClickElement.classList.remove("vditor-ir__node--expand");
-                        }
-                        vditor.preClickElement = null;
-                    } else {
-                        // node -> node, node -> another node
-                        if (vditor.preClickElement && vditor.preClickElement !== nodeElement) {
-                            vditor.preClickElement.classList.remove("vditor-ir__node--expand");
-                            vditor.preClickElement = nodeElement
-                        }
-                    }
+                    // 隐藏mark标签
+                    me.hideMarker(vditor, range);
                 });
             }
             clickToc(event, vditor);

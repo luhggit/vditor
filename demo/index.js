@@ -129,4 +129,7 @@ window.vditor = new Vditor('vditor', {
         replace('/\\s/g', '')
     },
   },
+  cache: {
+    enable: false,
+  },
 })

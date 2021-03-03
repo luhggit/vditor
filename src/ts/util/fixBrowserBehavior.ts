@@ -13,7 +13,7 @@ import {
     hasClosestBlock,
     hasClosestByAttribute,
     hasClosestByClassName,
-    hasClosestByMatchTag,
+    hasClosestByMatchTag
 } from "./hasClosest";
 import {getLastNode} from "./hasClosest";
 import {highlightToolbar} from "./highlightToolbar";
@@ -1384,7 +1384,7 @@ export const paste = async (vditor: IVditor, event: (ClipboardEvent | DragEvent)
         callback.pasteCode(code);
     } else {
         // 自己做了一下处理 2021.3.3 09:13 ，因为从memory list里复制过来的东西也带了格式，感觉有点不好
-        if (textHTML.trim() !== "" && !textHTML.startsWith("<a>") && !textHTML.startsWith("<span>")) {
+        if (textHTML.trim() !== "" && !textHTML.startsWith("<a") && !textHTML.startsWith("<span")) {
             const tempElement = document.createElement("div");
             tempElement.innerHTML = textHTML;
             tempElement.querySelectorAll("[style]").forEach((e) => {
@@ -1426,11 +1426,11 @@ export const paste = async (vditor: IVditor, event: (ClipboardEvent | DragEvent)
             vditor.outline.render(vditor);
         }
     }
+    const range = getEditorRange(vditor);
     if (vditor.currentMode !== "sv") {
         const blockElement = hasClosestBlock(getEditorRange(vditor).startContainer);
         if (blockElement) {
             // https://github.com/Vanessa219/vditor/issues/591
-            const range = getEditorRange(vditor);
             vditor[vditor.currentMode].element.querySelectorAll("wbr").forEach((wbr) => {
                 wbr.remove();
             });
@@ -1453,4 +1453,15 @@ export const paste = async (vditor: IVditor, event: (ClipboardEvent | DragEvent)
         Math.min(vditor[vditor.currentMode].element.clientHeight, window.innerHeight) / 2) {
         scrollCenter(vditor);
     }
+    // 设置preElement，用于在点击其它地方的时候自动把mark标记自动收起来
+    vditor.ir.element.querySelectorAll(".vditor-ir__node--expand").forEach((item) => {
+        if (item) {
+            if (!vditor.preClickElement) {
+                vditor.preClickElement = item;
+            } else if (vditor.preClickElement !== item) {
+                vditor.preClickElement = item;
+            }
+        }
+    });
+
 };

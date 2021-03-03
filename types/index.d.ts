@@ -664,7 +664,7 @@ interface IVditor {
         composingLock: boolean,
         preventInput: boolean,
     };
-    preClickElement?: HTMLElement;
+    preClickElement?: Element;
 }
 
 interface ICommentsData {
