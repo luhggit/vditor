@@ -70,10 +70,15 @@ class IR {
         const nodeElement = hasTopClosestByClassName(range.startContainer, "vditor-ir__node");
         console.log("now nodeElement:", nodeElement)
 
-        if (vditor.preClickElement && vditor.preClickElement !== nodeElement) {
+        // 如果鼠标移动到了非node节点，则将所有展示的node收起来
+        if (!vditor.preClickElement) {
+            vditor.ir.element.querySelectorAll(".vditor-ir__node--expand").forEach((item) => {
+                item.classList.remove("vditor-ir__node--expand");
+            });
+        } else if (vditor.preClickElement !== nodeElement) {
+            // 移动到了node节点，但是非之前的node，也收起
             vditor.preClickElement.classList.remove("vditor-ir__node--expand");
         }
-
         if (!nodeElement) {
             vditor.preClickElement = null;
         } else {
