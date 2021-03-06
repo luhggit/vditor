@@ -1264,6 +1264,11 @@ export const paste = async (vditor: IVditor, event: (ClipboardEvent | DragEvent)
             files = event.dataTransfer.items;
         }
     }
+    console.log("textHTML:", textHTML)
+    console.log("textPlain:", textPlain)
+    if (files) {
+        console.log("files:", files)
+    }
     const renderers: {
         HTML2VditorDOM?: ILuteRender,
         HTML2VditorIRDOM?: ILuteRender,
@@ -1383,8 +1388,20 @@ export const paste = async (vditor: IVditor, event: (ClipboardEvent | DragEvent)
     } else if (code) {
         callback.pasteCode(code);
     } else {
-        // 自己做了一下处理 2021.3.3 09:13 ，因为从memory list里复制过来的东西也带了格式，感觉有点不好
-        if (textHTML.trim() !== "" && !textHTML.startsWith("<a") && !textHTML.startsWith("<span")) {
+        // 处理自己设置的纯文本粘贴模式
+        // 自己做了一下处理 2021.3.6 09:13 ，因为从memory list里复制过来的东西也带了格式，感觉有点不好
+        if (vditor.options.plainTextPaste) {
+            textHTML = "";
+            // 处理以"#","+","-"为开头的字符串 ( ###) -> ( \###)
+            textPlain = textPlain.replaceAll(/^(\s*)([#+-])/g, "$1\\$2")
+            // 处理"`","$","*","~" (`$*~) -> (\`\$\*\~)
+            textPlain = textPlain.replaceAll(/([`$*~])/g, "\\$1");
+            // 有序列表  ( 1. abc) -> (1.abc)
+            textPlain = textPlain.replaceAll(/^(\s*)(\d+\.)\s+(.+)/g, "$1$2$3");
+            // 引用 ( > abc) -> ( \> abc)
+            textPlain = textPlain.replaceAll(/^(\s*)>(\s+.+)/g, "$1\\>$2");
+        }
+        if (textHTML.trim() !== "") {
             const tempElement = document.createElement("div");
             tempElement.innerHTML = textHTML;
             tempElement.querySelectorAll("[style]").forEach((e) => {

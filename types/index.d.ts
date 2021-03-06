@@ -547,6 +547,8 @@ interface IOptions {
         enable: boolean,
         position: "left" | "right",
     };
+    /** 是否启用纯文本粘贴模式, 默认为true */
+    plainTextPaste?: boolean;
 
     /** 编辑器异步渲染完成后的回调方法 */
     after?(): void;

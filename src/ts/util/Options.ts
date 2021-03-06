@@ -124,6 +124,7 @@ export class Options {
         },
         value: "",
         width: "auto",
+        plainTextPaste: true,
     };
 
     constructor(options: IOptions) {
