@@ -10,7 +10,7 @@ import {
     selectEvent,
 } from "../util/editorCommonEvent";
 import {paste} from "../util/fixBrowserBehavior";
-import {hasClosestByClassName, hasTopClosestByClassName} from "../util/hasClosest";
+import {hasClosestByAttribute, hasClosestByClassName, hasTopClosestByClassName} from "../util/hasClosest";
 import {
     getEditorRange, setRangeByWbr,
     setSelectionFocus,
@@ -114,7 +114,7 @@ class IR {
                 this.preventInput = false;
                 return;
             }
-            if (this.composingLock ||  event.data === "‘" || event.data === "“" || event.data === "《") {
+            if (this.composingLock || event.data === "‘" || event.data === "“" || event.data === "《") {
                 return;
             }
             input(vditor, getSelection().getRangeAt(0).cloneRange(), false, event);
@@ -160,6 +160,12 @@ class IR {
                     range.selectNode(linkElement);
                     setSelectionFocus(range);
                 }
+            }
+            // 打开链接
+            const aElement = hasClosestByAttribute(event.target, "data-type", "a");
+            if (aElement && (!aElement.classList.contains("vditor-ir__node--expand"))) {
+                window.open(aElement.querySelector(":scope > .vditor-ir__marker--link").textContent);
+                return;
             }
 
             if (event.target.isEqualNode(this.element) && this.element.lastElementChild && range.collapsed) {

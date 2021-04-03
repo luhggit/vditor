@@ -412,6 +412,11 @@ class WYSIWYG {
                 return;
             }
 
+            // 打开链接
+            if (event.target.tagName === "A") {
+                window.open(event.target.getAttribute("href"));
+            }
+
             const range = getEditorRange(vditor);
             if (event.target.isEqualNode(this.element) && this.element.lastElementChild && range.collapsed) {
                 const lastRect = this.element.lastElementChild.getBoundingClientRect();
@@ -433,7 +438,8 @@ class WYSIWYG {
             // 点击后光标落于预览区，需展开代码块
             let previewElement = hasClosestByClassName(event.target, "vditor-wysiwyg__preview");
             if (!previewElement) {
-                previewElement = hasClosestByClassName(getEditorRange(vditor).startContainer, "vditor-wysiwyg__preview");
+                previewElement =
+                    hasClosestByClassName(getEditorRange(vditor).startContainer, "vditor-wysiwyg__preview");
             }
             if (previewElement) {
                 showCode(previewElement, vditor);
