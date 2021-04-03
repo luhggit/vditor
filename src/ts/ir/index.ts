@@ -66,12 +66,17 @@ class IR {
     }
 
     private hideMarker(vditor: IVditor, range: Range) {
-        console.log("pre nodeElement:", vditor.preClickElement)
+        const preElement = vditor.preClickElement
+        console.log("pre nodeElement:", preElement)
         const nodeElement = hasTopClosestByClassName(range.startContainer, "vditor-ir__node");
         console.log("now nodeElement:", nodeElement)
 
-        // 移动到别的node节点（包括非node节点）
-        const moveToOther = !nodeElement || vditor.preClickElement !== nodeElement;
+        // // 移动到别的node节点（包括非node节点）
+        // const moveToOther = !nodeElement || preElement !== nodeElement;
+
+        // 移动非展开的节点就算移动
+        const moveToOther = !nodeElement || !nodeElement.classList.contains("vditor-ir__node--expand");
+
         // 如果鼠标移动到了非当前node节点，则将所有展示的node收起来
         if (moveToOther) {
             vditor.ir.element.querySelectorAll(".vditor-ir__node--expand").forEach((item) => {
